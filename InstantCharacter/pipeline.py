@@ -7,9 +7,9 @@ import torch
 from diffusers.pipelines.flux.pipeline_flux import *
 from transformers import SiglipVisionModel, SiglipImageProcessor, AutoModel, AutoImageProcessor
 
-from models.attn_processor import FluxIPAttnProcessor
-from models.resampler import CrossLayerCrossScaleProjector
-from models.utils import flux_load_lora
+from .models.attn_processor import FluxIPAttnProcessor
+from .models.resampler import CrossLayerCrossScaleProjector
+from .models.utils import flux_load_lora
 
 
 # TODO
