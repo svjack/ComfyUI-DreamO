@@ -27,7 +27,7 @@ class InstantCharacterLoadModel:
             "required": {
                 "hf_token": ("STRING", {"default": "", "multiline": True}),
                 "ip_adapter_name": (folder_paths.get_filename_list("ipadapter"), ),
-                "cpu_offload": ("BOOLEAN", {"default": True})
+                "cpu_offload": ("BOOLEAN", {"default": False})
             }
         }
     
