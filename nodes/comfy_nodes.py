@@ -34,8 +34,11 @@ class InstantCharacterLoadModel:
         image_encoder_path = "google/siglip-so400m-patch14-384"
         image_encoder_2_path = "facebook/dinov2-giant"
         cache_dir = folder_paths.get_folder_paths("diffusers")[0]
+        image_encoder_cache_dir = folder_paths.get_folder_paths("clip_vision")[0]
+        image_encoder_2_cache_dir = folder_paths.get_folder_paths("clip_vision")[0]
         device = "cuda" if torch.cuda.is_available() else "cpu"
         ip_adapter_path = folder_paths.get_full_path("ipadapter", ip_adapter_name)
+        
         pipe = InstantCharacterFluxPipeline.from_pretrained(
             base_model, 
             torch_dtype=torch.bfloat16,
@@ -48,7 +51,9 @@ class InstantCharacterLoadModel:
         
         pipe.init_adapter(
             image_encoder_path=image_encoder_path,
+            cache_dir=image_encoder_cache_dir,
             image_encoder_2_path=image_encoder_2_path,
+            cache_dir_2=image_encoder_2_cache_dir,
             subject_ipadapter_cfg=dict(
                 subject_ip_adapter_path=ip_adapter_path,
                 nb_token=1024
