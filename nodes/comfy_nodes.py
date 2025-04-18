@@ -9,7 +9,7 @@ import numpy as np
 # Add the parent directory to the Python path so we can import from easycontrol
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from pipeline import InstantCharacterFluxPipeline
+from InstantCharacter.pipeline import InstantCharacterFluxPipeline
 from huggingface_hub import login
 
 
