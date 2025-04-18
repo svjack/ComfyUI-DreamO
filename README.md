@@ -5,7 +5,7 @@ ComfyUI-InstantCharacter
 https://github.com/Tencent/InstantCharacter
 ComfyUI Warpper
 
-now Need 45GB VRAM, (now open offfload will error, fix offload and open it will run on 24GB VRAM.)
+now Need 45GB VRAM, (now open offload will error, fix offload and open it will run on 24GB VRAM.)
 
 flux model & image encoder will autodownload
 
