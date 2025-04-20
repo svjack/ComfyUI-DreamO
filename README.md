@@ -21,6 +21,15 @@ https://huggingface.co/tencent/InstantCharacter/blob/main/instantcharacter_ip-ad
 ![show](./assets/show.jpg)
 
 
+## Online Run:
+
+app run: [Flux Instant Character](https://www.comfyonline.app/explore/app/flux-instant-character)
+
+https://www.comfyonline.app comfyonline is comfyui cloud website, Run ComfyUI workflows online and deploy APIs with one click
+
+Provides an online environment for running your ComfyUI workflows, with the ability to generate APIs for easy AI application development.
+
+
 
 ## Paper Analysis
 
