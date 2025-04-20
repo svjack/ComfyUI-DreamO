@@ -18,7 +18,7 @@ ipadapter need download to models/ipadapter
 
 https://huggingface.co/tencent/InstantCharacter/blob/main/instantcharacter_ip-adapter.bin
 
-![show](./assets/show.png)
+![show](./assets/show.jpg)
 
 
 
