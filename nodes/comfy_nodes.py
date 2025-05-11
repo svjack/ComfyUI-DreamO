@@ -86,7 +86,7 @@ class DreamOGenerate:
     FUNCTION = "generate"
     CATEGORY = "DreamO"
 
-    def generate(self, pipe, bg_rm_model, face_helper, ref_image1, ref_task1, prompt, width, height, num_steps, guidance, seed, ref_res, ref_image2=None, ref_task2=None):
+    def generate(self, pipe, bg_rm_model, face_helper, ref_image1, ref_task1, prompt, width, height, num_steps, guidance, seed, ref_image2=None, ref_task2=None):
         ref_res = 512
         true_cfg = 1.0
         cfg_start_step = 0
