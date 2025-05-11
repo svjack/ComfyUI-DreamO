@@ -9,3 +9,5 @@ safetensors
 sentencepiece
 transformers
 timm
+opencv-python
+git+https://github.com/ToTheBeginning/facexlib.git
