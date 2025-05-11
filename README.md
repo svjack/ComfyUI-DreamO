@@ -98,6 +98,128 @@ if __name__ == "__main__":
 
 ```
 
+# Score it 
+```bash
+mkdir Xiang_Card_DreamO_Images
+
+cp ComfyUI/output/*.png Xiang_Card_DreamO_Images
+
+huggingface-cli upload svjack/Xiang_Card_DreamO_Images Xiang_Card_DreamO_Images --repo-type dataset
+```
+
+### Colab
+```python
+!git clone https://huggingface.co/spaces/svjack/Face-Similarity
+
+import os
+os.chdir("Face-Similarity")
+
+!pip install -r requirements.txt
+!pip install datasets
+
+from app import *
+
+!huggingface-cli login
+
+!huggingface-cli download svjack/Xiang_Card_DreamO_Images --local-dir Xiang_Card_DreamO_Images --repo-type dataset
+
+!ls Xiang_Card_DreamO_Images
+
+
+from gradio_client import Client, handle_file
+
+client = Client("http://localhost:7860")
+result = client.predict(
+		image1=handle_file('Xiang_Card_DreamO_Images/ComfyUI_00001_.png'),
+		image2=handle_file('xiang_image.jpg'),
+		api_name="/predict"
+)
+print(result)
+
+
+import os
+from gradio_client import Client, handle_file
+from datasets import Dataset
+import pandas as pd
+from datasets import Dataset, Image as HFImage
+from PIL import Image
+from tqdm import tqdm
+
+# 初始化Gradio客户端
+client = Client("http://localhost:7860")
+
+# 遍历文件夹并处理PNG文件
+def process_folder(folder_path, reference_image):
+    results = []
+
+    # 遍历文件夹中的所有PNG文件[3](@ref)
+    for filename in tqdm(os.listdir(folder_path)):
+        if filename.endswith(".png"):
+            file_path = os.path.join(folder_path, filename)
+
+            try:
+                # 调用API计算相似度[1](@ref)
+                result = client.predict(
+                    image1=handle_file(file_path),
+                    image2=handle_file(reference_image),
+                    api_name="/predict"
+                )
+
+                # 提取相似度分数
+                #score = float(result.replace("图片相似度:", "").strip())
+                score = float(result[1].replace("🔍 Distance Score:", "").strip())
+
+                # 将结果添加到列表中
+                results.append({
+                    "image": file_path,
+                    "score": score
+                })
+
+            except Exception as e:
+                print(f"处理文件 {filename} 时出错: {e}")
+
+    return results
+
+# 主处理流程
+def main():
+    # 设置路径
+    folder_path = "Xiang_Card_DreamO_Images"
+    reference_image = "xiang_image.jpg"
+
+    # 处理文件夹
+    results = process_folder(folder_path, reference_image)
+
+    # 创建DataFrame并按分数降序排序
+    df = pd.DataFrame(results)
+    df = df.sort_values(by="score", ascending=True)
+
+    # 创建HuggingFace数据集[5,7](@ref)
+    dataset = Dataset.from_pandas(df)
+
+    # 将image列转换为图片类型[7,9](@ref)
+    def load_image(example):
+        example["image"] = Image.open(example["image"])
+        return example
+
+    dataset = dataset.map(load_image)
+    dataset = dataset.cast_column("image", HFImage())
+
+    # 保存数据集
+    dataset.save_to_disk("similarity_dataset")
+    print("数据集已创建并保存为 similarity_dataset")
+
+    return dataset
+
+if __name__ == "__main__":
+    dataset = main()
+
+from datasets import load_from_disk
+load_from_disk("similarity_dataset/").remove_columns(["__index_level_0__"])
+
+load_from_disk("similarity_dataset/").remove_columns(["__index_level_0__"]).push_to_hub("svjack/Xiang_Card_DreamO_Images_Scores")
+```
+
+
 # ComfyUI-DreamO
 
 https://github.com/bytedance/DreamO
