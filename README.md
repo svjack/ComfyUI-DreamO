@@ -33,3 +33,9 @@ note: prompt need add "generate a same style image."
 ID (face) + IP  reference
 
 ![show](./assets/show_3.png)
+
+
+online run:
+
+https://www.comfyonline.app/machine_manager (DreamO Template)
+
