@@ -1,4 +1,4 @@
-diffusers==0.31.0
+diffusers
 easydict
 einops
 peft
