@@ -23,6 +23,39 @@ except ImportError:
 
 
 # DreamO Node for ComfyUI
+class DreamOLoadModelFromLocal:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "flux_model_path": ("STRING", {"default": "", "tooltip": ""}),
+                "cpu_offload": ("BOOLEAN", {"default": False}),
+                "dreamo_lora": (folder_paths.get_filename_list("loras"), ),
+                "dreamo_cfg_distill": (folder_paths.get_filename_list("loras"), ),
+                "turbo_lora": (["None"] +folder_paths.get_filename_list("loras"), ),
+            }
+        }
+
+    RETURN_TYPES = ("DREAMO_PIPE",)
+    FUNCTION = "load_model"
+    CATEGORY = "DreamO"
+
+    def load_model(self, flux_model_path, cpu_offload, dreamo_lora, dreamo_cfg_distill, turbo_lora):
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        # Load DreamO pipeline
+        dreamo_pipeline = DreamOPipeline.from_pretrained(flux_model_path, torch_dtype=torch.bfloat16)
+        dreamo_lora_path = folder_paths.get_full_path("loras", dreamo_lora)
+        dreamo_cfg_distill_path = folder_paths.get_full_path("loras", dreamo_cfg_distill)
+        turbo_lora_path = folder_paths.get_full_path("loras", turbo_lora) if turbo_lora != "None" else None
+        dreamo_pipeline.load_dreamo_model(device, dreamo_lora_path, dreamo_cfg_distill_path, turbo_lora_path)
+        if cpu_offload:
+            dreamo_pipeline.enable_sequential_cpu_offload()
+        else:
+            dreamo_pipeline.to(device)
+        return (dreamo_pipeline, )
+
+
+# DreamO Node for ComfyUI
 class DreamOLoadModel:
     @classmethod
     def INPUT_TYPES(cls):
