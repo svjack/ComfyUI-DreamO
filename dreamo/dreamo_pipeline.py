@@ -60,9 +60,10 @@ class DreamOPipeline(FluxPipeline):
             self.load_lora_weights(cfg_diffuser_lora, adapter_name='cfg')
             adapter_names.append('cfg')
             adapter_weights.append(1)
-        self.load_lora_weights(turbo_lora_path, adapter_name='turbo')
-        adapter_names.append('turbo')
-        adapter_weights.append(1)
+        if turbo_lora_path is not None:
+            self.load_lora_weights(turbo_lora_path, adapter_name='turbo')
+            adapter_names.append('turbo')
+            adapter_weights.append(1)
 
         self.fuse_lora(adapter_names=adapter_names, adapter_weights=adapter_weights, lora_scale=1)
 

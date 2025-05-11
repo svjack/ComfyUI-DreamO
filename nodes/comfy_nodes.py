@@ -32,7 +32,7 @@ class DreamOLoadModel:
                 "cpu_offload": ("BOOLEAN", {"default": False}),
                 "dreamo_lora": (folder_paths.get_filename_list("loras"), ),
                 "dreamo_cfg_distill": (folder_paths.get_filename_list("loras"), ),
-                "turbo_lora": (folder_paths.get_filename_list("loras"), ),
+                "turbo_lora": (["None"] +folder_paths.get_filename_list("loras"), ),
             }
         }
 
@@ -49,7 +49,7 @@ class DreamOLoadModel:
         dreamo_pipeline = DreamOPipeline.from_pretrained(model_root, torch_dtype=torch.bfloat16, cache_dir=cache_dir)
         dreamo_lora_path = folder_paths.get_full_path("loras", dreamo_lora)
         dreamo_cfg_distill_path = folder_paths.get_full_path("loras", dreamo_cfg_distill)
-        turbo_lora_path = folder_paths.get_full_path("loras", turbo_lora)
+        turbo_lora_path = folder_paths.get_full_path("loras", turbo_lora) if turbo_lora != "None" else None
         dreamo_pipeline.load_dreamo_model(device, dreamo_lora_path, dreamo_cfg_distill_path, turbo_lora_path)
         if cpu_offload:
             dreamo_pipeline.enable_sequential_cpu_offload()
@@ -82,7 +82,7 @@ class DreamOGenerate:
             }
         }
 
-    RETURN_TYPES = ("IMAGE", "IMAGE", "INT")  # output_image, debug_image, used_seed
+    RETURN_TYPES = ("IMAGE", )  # output_image, debug_image, used_seed
     FUNCTION = "generate"
     CATEGORY = "DreamO"
 
@@ -163,8 +163,8 @@ class DreamOGenerate:
         if image.dim() == 3:
             image = image.unsqueeze(0)
         # Also convert debug_images to tensors
-        debug_images_tensor = [torch.from_numpy(np.array(img) / 255.0).float().unsqueeze(0) if np.array(img).ndim == 3 else torch.from_numpy(np.array(img) / 255.0).float() for img in debug_images]
-        return (image, debug_images_tensor, used_seed)
+        # debug_images_tensor = [torch.from_numpy(np.array(img) / 255.0).float().unsqueeze(0) if np.array(img).ndim == 3 else torch.from_numpy(np.array(img) / 255.0).float() for img in debug_images]
+        return (image, )
 
 class FaceModelLoad:
     @classmethod
