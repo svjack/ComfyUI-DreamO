@@ -1,3 +1,20 @@
+```bash
+comfy launch -- --listen 0.0.0.0
+
+wget https://huggingface.co/ByteDance/DreamO/resolve/main/dreamo.safetensors
+
+wget https://huggingface.co/ByteDance/DreamO/resolve/main/dreamo_cfg_distill.safetensors
+
+cp dreamo*.safetensors ComfyUI/models/loras
+
+huggingface-cli login
+
+in file ComfyUI-DreamO.nodes.comfy_nodes.py
+#login(token=hf_token)
+or 
+past in DreanO Load Model node
+```
+
 # ComfyUI-DreamO
 
 https://github.com/bytedance/DreamO
