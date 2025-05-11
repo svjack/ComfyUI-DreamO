@@ -106,6 +106,8 @@ class DreamOGenerate:
                 if isinstance(img, torch.Tensor):
                     img = img[0].cpu().numpy() if img.dim() == 4 else img.cpu().numpy()
                     img = (img * 255).astype(np.uint8)
+                elif isinstance(img, np.ndarray):
+                    img = Image.fromarray((img * 255).astype(np.uint8))
                 if ref_task == "id":
                     if face_helper is not None:
                         face_helper.clean_all()
