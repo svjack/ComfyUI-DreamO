@@ -5,14 +5,16 @@ import folder_paths
 from PIL import Image
 import numpy as np
 import cv2
-from dreamo.dreamo_pipeline import DreamOPipeline
-from dreamo.utils import img2tensor, resize_numpy_image_area, tensor2img
-from tools import BEN2
-from huggingface_hub import login, hf_hub_download
+
 
 
 # Add the parent directory to the Python path so we can import from easycontrol
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from dreamo.dreamo_pipeline import DreamOPipeline
+from dreamo.utils import img2tensor, resize_numpy_image_area, tensor2img
+from tools import BEN2
+from huggingface_hub import login, hf_hub_download
 
 try:
     from facexlib.utils.face_restoration_helper import FaceRestoreHelper
