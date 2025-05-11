@@ -55,9 +55,7 @@ class DreamOLoadModel:
             dreamo_pipeline.enable_sequential_cpu_offload()
         else:
             dreamo_pipeline.to(device)
-        return ({
-            'dreamo_pipeline': dreamo_pipeline,
-        },)
+        return (dreamo_pipeline, )
 
 class DreamOGenerate:
     @classmethod
@@ -94,8 +92,8 @@ class DreamOGenerate:
         neg_prompt = ""
         neg_guidance = 3.5
         first_step_guidance = 0
-        dreamo_pipeline = pipe['dreamo_pipeline']
-        device = pipe['device']
+        dreamo_pipeline = pipe
+        device = "cuda" if torch.cuda.is_available() else "cpu"
         ref_conds = []
         debug_images = []
         ref_images = [ref_image1, ref_image2]
