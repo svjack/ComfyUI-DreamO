@@ -97,6 +97,123 @@ if __name__ == "__main__":
     main()
 
 ```
+### vim run_xiang_guitar.py
+```python
+
+import os
+
+os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
+
+import time
+import subprocess
+from pathlib import Path
+from datasets import load_dataset
+from huggingface_hub import login
+
+# Configuration
+SEED = 661695664686456
+IMAGE_PATH = 'xiang_image.jpg'
+STYLE_IMAGE_PATH = 'ComfyUI/input/style_image.jpg'  # Updated path
+OUTPUT_DIR = 'ComfyUI/output'
+PYTHON_PATH = '/environment/miniconda3/bin/python'
+HF_TOKEN = ""  # Replace with your Hugging Face token
+
+def download_style_images():
+    """Download style images from Hugging Face dataset"""
+    # Login to Hugging Face
+    #login(token=HF_TOKEN)
+
+    # Load dataset
+    dataset = load_dataset("svjack/Aesthetics_X_Phone_4K_Images")
+
+    # Ensure input directory exists
+    os.makedirs("ComfyUI/input", exist_ok=True)
+
+    # Iterate through images and save them
+    for i, image in enumerate(dataset["train"]["image"]):
+        image_path = f"ComfyUI/input/style_image_{i}.jpg"
+        image.save(image_path)
+        yield image_path.split("/")[-1]
+
+def get_latest_output_count():
+    """Return the number of PNG files in the output directory"""
+    try:
+        return len(list(Path(OUTPUT_DIR).glob('*.png')))
+    except:
+        return 0
+
+def wait_for_new_output(initial_count):
+    """Wait until a new PNG file appears in the output directory"""
+    timeout = 6000  # seconds
+    start_time = time.time()
+
+    while time.time() - start_time < timeout:
+        current_count = get_latest_output_count()
+        if current_count > initial_count:
+            time.sleep(1)  # additional 1 second delay
+            return True
+        time.sleep(0.5)
+    return False
+
+def generate_script(seed, style_image_path):
+    """Generate the ComfyUI script with the given seed"""
+    script_content = f"""from comfy_script.runtime import *
+load()
+from comfy_script.runtime.nodes import *
+with Workflow():
+    dreamo_pipe = DreamOLoadModel('{HF_TOKEN}', True, 'dreamo.safetensors', 'dreamo_cfg_distill.safetensors', 'None')
+    bg_rm_model = BgRmModelLoad()
+    face_helper = FaceModelLoad()
+    image, _ = LoadImage('{IMAGE_PATH}')
+    image2, _ = LoadImage('{style_image_path}')
+    image3 = DreamOGenerate(dreamo_pipe, bg_rm_model, face_helper, image,
+        'id', 'a man play a guitar in beautiful landscape.', 1024, 1024, 30, 10, {seed}, image2, 'ip')
+    SaveImage(image3, 'ComfyUI')
+"""
+    return script_content
+
+def main():
+    SEED = 661695664686456
+    # Ensure output directory exists
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+    # Get style images iterator
+    style_images = download_style_images()
+
+    # Main generation loop
+    while True:
+        # Get next style image
+        try:
+            current_style_image = next(style_images)
+        except StopIteration:
+            print("No more style images available")
+            break
+
+        # Generate script with current seed and style image
+        script = generate_script(SEED, current_style_image)
+
+        # Write script to file
+        with open('run_dreamo_generation.py', 'w') as f:
+            f.write(script)
+
+        # Get current output count before running
+        initial_count = get_latest_output_count()
+
+        # Run the script
+        print(f"Generating image with seed: {SEED} and style image: {current_style_image}")
+        subprocess.run([PYTHON_PATH, 'run_dreamo_generation.py'])
+
+        # Wait for new output
+        if not wait_for_new_output(initial_count):
+            print("Timeout waiting for new output. Continuing to next generation.")
+
+        # Increment seed for next generation
+        SEED -= 1
+
+if __name__ == "__main__":
+    main()
+
+```
 
 # Score it 
 ```bash
